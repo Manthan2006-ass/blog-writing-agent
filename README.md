@@ -1,37 +1,79 @@
-# 🤖 Multi-Agent AI Content Generation Studio (LangGraph + Ollama)
+# Blog Writing Agent
 
-A production-grade, local-first compound AI engineering system that acts as an automated content production team. The application leverages **LangGraph** for advanced multi-agent state orchestration, **LangChain** for robust interface parsing, and a local **Ollama** engine for completely cost-free semantic composition. 
+A Streamlit + LangGraph project that generates blog posts from a topic, optionally researches the web, creates a draft outline, writes section-by-section markdown, and can place images into the final output.
 
-It features real-time search grounding and an automated dual-layer image fail-safe pipeline that bypasses API rate limits gracefully.
+## Overview
 
----
+This project has two main parts:
+- **Frontend**: a Streamlit UI for entering a topic, viewing progress, previewing markdown, and downloading blog outputs.
+- **Backend**: a LangGraph pipeline that decides whether research is needed, plans the blog, writes sections, merges content, and generates image placeholders.
 
-## 🏗️ Core Architecture (Orchestrator-Workers Map-Reduce)
+## Project Structure
 
-This system implements an asynchronous Map-Reduce architecture optimized to maximize local computation output while keeping model token windows narrow and fast:
+- [frontend.py](frontend.py)  
+  Streamlit app UI and markdown/image rendering.
 
-1. **Router Node:** Analyzes the topic matrix and classifies the configuration constraint parameters (`closed_book`, `hybrid`, or `open_book`).
-2. **Research Node:** Performs deep web grounding via the **Tavily API** to gather structural citations and real-time facts.
-3. **Orchestrator Node:** Generates clean, production-scoped task outline configurations using strict schema validation parameters.
-4. **Worker Nodes (Parallel Fan-out):** In parallel, separate worker nodes compose distinct chapters natively in technical Markdown.
-5. **Reducer Subgraph:** Integrates paragraph objects, executes placeholder injections (`[[IMAGE_1]]`), and calls the asset canvas to apply illustrations.
+- [backend.py](backend.py)  
+  LangGraph workflow for router, research, planner, worker nodes, and image handling.
 
----
+- [requirements.txt](requirements.txt)  
+  Python dependencies needed to run the project.
 
-## ✨ Key Features
-- **100% Free Text Compilation:** Powered entirely by a local **`qwen2.5-coder:7b`** model running on Ollama, saving thousands of dollars in cloud API tokens.
-- **Strict Structural Enforcement:** Uses deterministic `json_schema` parsing modes to ensure a local 7B model maps complex, multi-level Pydantic data schemas cleanly without crashing.
-- **Adaptive Sidebar Layout Toggles:** Includes an explicit **📄 Generate GitHub README Mode** sidebar switch. When active, it re-routes the internal prompts to build repository README structures rather than technical articles.
-- **Robust API Fail-safe Handling:** Catches cloud image generation `429 RESOURCE_EXHAUSTED` limitations silently. If throttled, it immediately falls back to contextual, high-signal Unsplash layouts so image asset components are never broken.
+## Features
 
----
+- Topic-based blog generation
+- Optional web research using Tavily
+- Structured planning with section tasks
+- Markdown preview and download
+- Image plan and image download support
+- Past blog loading from local `.md` files
 
-## 🛠️ Installation & Setup
+## Required Setup
 
-### 1. Prerequisites
-Ensure you have Python 3.10+ and [Ollama](https://ollama.com/) installed locally.
+### 1. Python environment
+Create and activate a virtual environment, then install dependencies:
 
-### 2. Initialize the Local Engine
-Pull and boot up the optimized coding model inside your system command prompt:
 ```bash
-ollama run qwen2.5-coder:7b
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. Environment variables
+Create a `.env` file with the required API keys:
+
+```env
+GOOGLE_API_KEY=your_google_api_key
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+You may also need an OpenAI-compatible key depending on your setup, but the main backend workflow is designed around the configured model services.
+
+### 3. Local model service
+The backend expects a running local model service for the Ollama-based LLM setup. Start Ollama before running the app.
+
+## Run the Application
+
+```bash
+streamlit run frontend.py
+```
+
+Then open the URL shown by Streamlit in your browser.
+
+## How the Workflow Works
+
+1. The app receives a topic and date from the UI.
+2. The router decides if research is needed.
+3. If needed, Tavily search results are gathered.
+4. The orchestrator creates a content plan.
+5. Worker nodes write each section in markdown.
+6. The reducer combines sections and optionally inserts image placeholders.
+7. The UI shows the plan, evidence, markdown preview, and generated images.
+
+## Notes
+
+- The app depends on external APIs and local model services, so generation quality depends on those services being available.
+- Image generation is optional and may fail if the API credentials or model access are not configured correctly.
+- The generated markdown and images are saved into the project folder for download.
+
+
