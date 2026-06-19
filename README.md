@@ -39,17 +39,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 2. Environment variables
-Create a `.env` file with the required API keys:
-
-```env
-GOOGLE_API_KEY=your_google_api_key
-TAVILY_API_KEY=your_tavily_api_key
-```
-
-You may also need an OpenAI-compatible key depending on your setup, but the main backend workflow is designed around the configured model services.
-
-### 3. Local model service
+### 2. Local model service
 The backend expects a running local model service for the Ollama-based LLM setup. Start Ollama before running the app.
 
 ## Run the Application
